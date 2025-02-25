@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import apiService from "../services/apiService";
+import "./Chat.css"; // Import the responsive CSS
 
-// Connect to Socket.io server
+// Connect to Socket.io server (using your production URL)
 const socket = io("https://p2p-1.onrender.com");
 
 const Chat = () => {
@@ -11,7 +12,8 @@ const Chat = () => {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
 
-    // Get the logged-in user's name from localStorage
+    // Get the logged-in user's identifier from localStorage
+    // (You might want to store username instead of userId; adjust as needed)
     const username = localStorage.getItem("userId") || "Anonymous";
 
     useEffect(() => {
@@ -65,114 +67,47 @@ const Chat = () => {
     };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.sidebar}>
+        <div className="chat-container">
+            <div className="chat-sidebar">
                 <h3>Users</h3>
-                <ul style={styles.userList}>
+                <ul className="user-list">
                     {users.map((user, index) => (
-                        <li key={index}
-                            style={{
-                                ...styles.user,
-                                backgroundColor: user.name === selectedUser ? "#007bff" : "transparent",
-                                color: user.name === selectedUser ? "white" : "black",
-                            }}
-                            onClick={() => setSelectedUser(user.name)}>
+                        <li
+                            key={index}
+                            className={`user-item ${user.name === selectedUser ? "selected" : ""}`}
+                            onClick={() => setSelectedUser(user.name)}
+                        >
                             {user.name}
                         </li>
                     ))}
                 </ul>
             </div>
-            <div style={styles.chatArea}>
-                <h2 style={styles.username}>
+            <div className="chat-area">
+                <h2 className="chat-header">
                     {selectedUser ? `Chat with ${selectedUser}` : "Select a user to chat"}
                 </h2>
-                <div style={styles.chatBox}>
+                <div className="chat-box">
                     {messages.map((msg, index) => (
-                        <div key={index} style={styles.messageContainer}>
-                            <p style={styles.message}>
+                        <div key={index} className="message-container">
+                            <p className="message">
                                 <strong>{msg.sender}:</strong> {msg.message}
                             </p>
                         </div>
                     ))}
                 </div>
-                <div style={styles.inputContainer}>
+                <div className="input-container">
                     <input
                         type="text"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="Type your message..."
-                        style={styles.input}
+                        className="message-input"
                     />
-                    <button onClick={sendMessage} style={styles.button}>Send</button>
+                    <button onClick={sendMessage} className="send-button">Send</button>
                 </div>
             </div>
         </div>
     );
-};
-
-const styles = {
-    container: {
-        display: "flex",
-        width: "80%",
-        margin: "auto",
-        height: "500px",
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-    },
-    sidebar: {
-        width: "30%",
-        padding: "20px",
-        backgroundColor: "#f1f1f1",
-        borderRight: "1px solid #ddd",
-        overflowY: "auto",
-    },
-    userList: {
-        listStyleType: "none",
-        padding: 0,
-    },
-    user: {
-        padding: "10px",
-        borderBottom: "1px solid #ccc",
-        cursor: "pointer",
-    },
-    chatArea: {
-        flex: 1,
-        padding: "20px",
-        display: "flex",
-        flexDirection: "column",
-    },
-    username: {
-        textAlign: "center",
-        color: "#333",
-    },
-    chatBox: {
-        flex: 1,
-        overflowY: "auto",
-        border: "1px solid #ccc",
-        padding: "10px",
-        borderRadius: "4px",
-        backgroundColor: "#f9f9f9",
-    },
-    inputContainer: {
-        display: "flex",
-        gap: "10px",
-        marginTop: "10px",
-    },
-    input: {
-        flex: 1,
-        padding: "8px",
-        borderRadius: "4px",
-        border: "1px solid #ccc",
-    },
-    button: {
-        padding: "8px 12px",
-        borderRadius: "4px",
-        border: "none",
-        backgroundColor: "#007bff",
-        color: "white",
-        cursor: "pointer",
-    },
 };
 
 export default Chat;
